@@ -1,0 +1,48 @@
+syntax = "proto3";
+package logstore;
+import "google/protobuf/empty.proto"; 
+import "google/protobuf/timestamp.proto";
+
+option go_package = "./logStore";
+
+service logservice {
+  rpc publishLog (logEntryReq) returns (logEntryRes) {}
+  rpc getlog (logretrivalreq) returns (stream logEntry) {}
+  rpc clearlog (google.protobuf.Empty) returns (clearRes) {}
+  rpc listen (listenReq) returns (stream logEntry) {}
+}
+
+enum loglevel {
+  warn = 0;
+  error = 1;
+  critical = 2;
+}
+
+message logEntry{
+  string message = 1;
+  google.protobuf.Timestamp timestamp = 2;
+  string details = 3;
+  loglevel level = 4;
+}
+
+message logEntryReq {
+  logEntry entry = 1;
+}
+
+message logEntryRes {
+  bool inserted = 1;
+}
+
+message logretrivalreq{
+  bool all = 1;
+  bool latest = 2;
+  int32 head = 3;
+}
+
+message clearRes{
+  bool cleared = 1;
+}
+
+message listenReq{
+  int32 loglevel = 1;
+}
